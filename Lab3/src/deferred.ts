@@ -1,0 +1,27 @@
+
+import assert from 'node:assert';
+
+type Resolver<T> = (value: T | PromiseLike<T>) => void;
+type Rejector = (reason: Error) => void;
+
+/** Deferred represents a promise plus operations to resolve or reject it. */
+export class Deferred<T> {
+
+  /** The promise. */
+  public readonly promise: Promise<T>;
+
+  /** Mutator: fulfill the promise with a value of type T. */
+  public readonly resolve: Resolver<T>;
+
+  /** Mutator: reject the promise with an Error value. */
+  public readonly reject: Rejector;
+  
+  /** Make a new Deferred. */
+  public constructor() {
+    const { promise, resolve, reject } = Promise.withResolvers<T>();
+    this.promise = promise;
+    this.resolve = resolve;
+    this.reject = reject;
+  }
+
+}
