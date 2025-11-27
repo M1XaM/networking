@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KV Store Dashboard</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 2em; 
+        }
+        h1 { 
+            color: #333; 
+            text-align: center;
+            margin-bottom: 1.5em;
+        }
+        #dashboard {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5em;
+            justify-content: center;
+        }
+        .node { 
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            border: 1px solid #ccc; 
+            padding: 1em; 
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: #fff;
+        }
+        .node h2 {
+            margin-top: 0;
+            padding-bottom: 0.5em;
+            border-bottom: 1px solid #eee;
+            color: #2c3e50;
+        }
+        .error { 
+            color: #e74c3c; 
+            font-weight: bold;
+            padding: 0.5em;
+            background-color: #fdf2f2;
+            border-radius: 4px;
+        }
+        pre { 
+            background: #f8f8f8; 
+            padding: 1em; 
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 0;
+        }
+        .loading {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Key-Value Store Dashboard</h1>
+    <div id="dashboard">
+        <div class="loading">Loading data...</div>
+    </div>
+    <script>
+        async function fetchData() {
+            try {
+                const res = await fetch('/api/all_data');
+                const data = await res.json();
+                const dashboard = document.getElementById('dashboard');
+                dashboard.innerHTML = '';
+                
+                for (const [node, info] of Object.entries(data)) {
+                    const div = document.createElement('div');
+                    div.className = 'node';
+                    div.innerHTML = `<h2>${node}</h2>`;
+                    
+                    if (info.error) {
+                        div.innerHTML += `<div class="error">Error: ${info.error}</div>`;
+                    } else {
+                        div.innerHTML += `<pre>${JSON.stringify(info, null, 2)}</pre>`;
+                    }
+                    
+                    dashboard.appendChild(div);
+                }
+            } catch (e) {
+                document.getElementById('dashboard').innerHTML = `<div class="error">Dashboard error: ${e}</div>`;
+            }
+        }
+        
+        setInterval(fetchData, 2000);
+        fetchData();
+    </script>
+</body>
+</html>

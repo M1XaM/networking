@@ -1,0 +1,79 @@
+services:
+  leader:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ROLE=leader
+      - PORT=8000
+      - WRITE_QUORUM=3
+      - WORKER_THREADS=10
+      - MIN_DELAY=1
+      - MAX_DELAY=1000
+      - FOLLOWERS=http://follower1:8001,http://follower2:8002,http://follower3:8003,http://follower4:8004,http://follower5:8005
+    networks:
+      - kvnet
+
+  follower1:
+    build: .
+    ports:
+      - "8001:8001"
+    environment:
+      - ROLE=follower
+      - PORT=8001
+    networks:
+      - kvnet
+
+  follower2:
+    build: .
+    ports:
+      - "8002:8002"
+    environment:
+      - ROLE=follower
+      - PORT=8002
+    networks:
+      - kvnet
+
+  follower3:
+    build: .
+    ports:
+      - "8003:8003"
+    environment:
+      - ROLE=follower
+      - PORT=8003
+    networks:
+      - kvnet
+
+  follower4:
+    build: .
+    ports:
+      - "8004:8004"
+    environment:
+      - ROLE=follower
+      - PORT=8004
+    networks:
+      - kvnet
+
+  follower5:
+    build: .
+    ports:
+      - "8005:8005"
+    environment:
+      - ROLE=follower
+      - PORT=8005
+    networks:
+      - kvnet
+
+  dashboard:
+    build: ./src/dashboard
+    ports:
+      - "8080:8080"
+    environment:
+      - LEADER=http://leader:8000
+      - FOLLOWERS=http://follower1:8001,http://follower2:8002,http://follower3:8003,http://follower4:8004,http://follower5:8005
+    networks:
+      - kvnet
+
+networks:
+  kvnet:
+    driver: bridge
